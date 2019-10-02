@@ -21,7 +21,8 @@ VOLUME ["/workdir"]
 WORKDIR /workdir
 
 RUN go get -u github.com/mercari/tfnotify
-RUN go get -u github.com/ak1ra24/drone-github-notifier
+RUN go get -u github.com/ak1ra24/mnoclient
+RUN go get -u github.com/ak1ra24/tfstatediff
 
 ENTRYPOINT ["/bin/terraform"]
 CMD ["--help"]
