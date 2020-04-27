@@ -1,12 +1,9 @@
-FROM golang:1.12.13-alpine
-MAINTAINER SHOGO MAEDA
+FROM golang:1.13.10-alpine
 
-LABEL io.whalebrew.config.environment '["SAKURACLOUD_ACCESS_TOKEN", "SAKURACLOUD_ACCESS_TOKEN_SECRET" , "SAKURACLOUD_ZONE" , "SAKURACLOUD_TIMEOUT" , "SAKURACLOUD_TRACE_MODE","SACLOUD_OJS_ACCESS_KEY_ID","SACLOUD_OJS_SECRET_ACCESS_KEY" ]'
+ENV TERRAFORM_VERSION=0.12.20
+ENV SACLOUD_TERRAFORM_VERSION=1.21.3
 
-ENV TERRAFORM_VERSION=0.12.18
-ENV SACLOUD_TERRAFORM_VERSION=1.20.1
-
-RUN apk add --update git bash openssh curl unzip
+RUN apk add --update git bash openssh curl unzip tar
 
 
 RUN mkdir -p ~/terraform \
@@ -19,12 +16,15 @@ ADD https://github.com/sacloud/terraform-provider-sakuracloud/releases/download/
 RUN unzip terraform-provider-sakuracloud_${SACLOUD_TERRAFORM_VERSION}_linux-amd64.zip -d /bin
 RUN rm -f terraform-provider-sakuracloud_${SACLOUD_TERRAFORM_VERSION}_linux-amd64.zip
 
+RUN curl -sL https://github.com/mercari/tfnotify/releases/download/v0.6.0/tfnotify_linux_amd64.tar.gz > tfnotify.tar.gz \
+ && tar -zxvf tfnotify.tar.gz -C /bin \
+ && rm -f tfnotify.tar.gz
+
 VOLUME ["/workdir"]
 WORKDIR /workdir
 
 ENV GO111MODULE=on
 
-RUN go get -u github.com/mercari/tfnotify@v0.3.3
 RUN go get -u github.com/ak1ra24/mnoclient
 RUN go get -u github.com/ak1ra24/tfstatediff
 
